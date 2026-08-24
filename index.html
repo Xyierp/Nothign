@@ -1,1 +1,252 @@
+# XDS — index.html
 
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>XDS — All Source</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #000;
+    color: #fff;
+}
+
+/* Background */
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Animated glow */
+body::before {
+    content: "";
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(
+        circle,
+        rgba(255,255,255,0.08),
+        transparent 65%
+    );
+    filter: blur(30px);
+    animation: moveGlow 8s ease-in-out infinite alternate;
+}
+
+@keyframes moveGlow {
+    from {
+        transform: translate(-120px, -80px);
+    }
+    to {
+        transform: translate(120px, 80px);
+    }
+}
+
+/* Grid */
+.grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.12;
+    background-image:
+        linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);
+    background-size: 55px 55px;
+    mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        black 30%,
+        black 70%,
+        transparent
+    );
+}
+
+/* Main card */
+.container {
+    position: relative;
+    z-index: 2;
+    width: min(90%, 650px);
+    text-align: center;
+    padding: 55px 35px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 24px;
+    background: rgba(10,10,10,.72);
+    backdrop-filter: blur(20px);
+    box-shadow:
+        0 0 60px rgba(255,255,255,.04),
+        inset 0 0 40px rgba(255,255,255,.015);
+    animation: appear .8s ease forwards;
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: translateY(25px) scale(.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Logo */
+.logo {
+    font-size: clamp(60px, 14vw, 110px);
+    font-weight: 900;
+    letter-spacing: -7px;
+    line-height: .9;
+    color: #fff;
+    text-shadow:
+        0 0 25px rgba(255,255,255,.15);
+}
+
+.subtitle {
+    margin-top: 18px;
+    color: #888;
+    font-size: 13px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+}
+
+/* Divider */
+.line {
+    width: 70px;
+    height: 1px;
+    background: #444;
+    margin: 30px auto;
+}
+
+/* Description */
+.description {
+    color: #777;
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 430px;
+    margin: auto;
+}
+
+/* Button */
+.source-btn {
+    margin-top: 32px;
+    width: 100%;
+    max-width: 360px;
+    padding: 17px 25px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    background: #fff;
+    color: #000;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        background .25s ease;
+}
+
+.source-btn:hover {
+    transform: translateY(-4px);
+    background: #eee;
+    box-shadow:
+        0 12px 35px rgba(255,255,255,.15);
+}
+
+.source-btn:active {
+    transform: scale(.97);
+}
+
+/* Footer */
+.footer {
+    margin-top: 35px;
+    color: #444;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+/* Floating particles */
+.particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #fff;
+    border-radius: 50%;
+    opacity: .25;
+    animation: float linear infinite;
+}
+
+@keyframes float {
+    from {
+        transform: translateY(110vh);
+    }
+    to {
+        transform: translateY(-10vh);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="grid"></div>
+
+<div class="particle" style="left:8%; animation-duration:13s;"></div>
+<div class="particle" style="left:18%; animation-duration:17s;"></div>
+<div class="particle" style="left:31%; animation-duration:11s;"></div>
+<div class="particle" style="left:47%; animation-duration:19s;"></div>
+<div class="particle" style="left:62%; animation-duration:14s;"></div>
+<div class="particle" style="left:76%; animation-duration:16s;"></div>
+<div class="particle" style="left:89%; animation-duration:12s;"></div>
+
+<main class="container">
+
+    <div class="logo">XDS</div>
+
+    <div class="subtitle">
+        All Source
+    </div>
+
+    <div class="line"></div>
+
+    <p class="description">
+        Welcome to XDS. Access the official XDS source hub
+        through the button below.
+    </p>
+
+    <button class="source-btn" onclick="openSource()">
+        XDS — ALL SOURCE
+    </button>
+
+    <div class="footer">
+        XDS © 2026
+    </div>
+
+</main>
+
+<script>
+function openSource() {
+    window.open(
+        "https://yip.su/2tbyv8",
+        "_blank",
+        "noopener,noreferrer"
+    );
+}
+</script>
+
+</body>
+</html>
+```

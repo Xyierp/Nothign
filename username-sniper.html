@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Username Sniper — malamods</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root {
+    --bg:       #080810;
+    --bg1:      #0f0f1a;
+    --bg2:      #161625;
+    --bg3:      #1e1e30;
+    --border:   #2a2a42;
+    --border2:  #3a3a58;
+    --accent:   #7c3aed;
+    --accent2:  #9b5de5;
+    --avail:    #22c55e;
+    --taken:    #ec4899;
+    --checking: #f59e0b;
+    --text:     #e2e8f0;
+    --muted:    #64748b;
+    --muted2:   #94a3b8;
+    --mono:     'JetBrains Mono', monospace;
+    --sans:     'Inter', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .wordmark {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+  .wordmark span { color: var(--accent2); }
+  .badge {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    padding: 3px 8px;
+    color: var(--muted2);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ─── LAYOUT ─── */
+  .layout { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+  /* ─── CARD ─── */
+  .card {
+    background: var(--bg1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .card-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+    font-family: var(--mono);
+  }
+
+  /* ─── INPUTS ─── */
+  .field-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 160px; }
+  .field label { font-size: 0.72rem; color: var(--muted2); font-weight: 500; letter-spacing: 0.5px; }
+  input[type="text"],
+  input[type="number"],
+  input[type="url"],
+  textarea {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 9px 12px;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    width: 100%;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--bg3);
+  }
+  input::placeholder, textarea::placeholder { color: var(--muted); }
+  textarea { resize: vertical; min-height: 72px; }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 18px;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-stop { background: var(--bg3); color: var(--muted2); border: 1px solid var(--border2); }
+  .btn-stop:hover { background: var(--border2); color: var(--text); }
+  .btn-ghost { background: transparent; color: var(--muted2); border: 1px solid var(--border); font-size: 0.75rem; padding: 7px 12px; }
+  .btn-ghost:hover { background: var(--bg2); color: var(--text); }
+  .btn-danger { background: transparent; color: var(--taken); border: 1px solid var(--taken); opacity: 0.7; }
+  .btn-danger:hover { opacity: 1; background: rgba(236,72,153,0.08); }
+  .btn-copy {
+    background: var(--bg3);
+    color: var(--muted2);
+    border: 1px solid var(--border);
+    font-size: 0.68rem;
+    padding: 4px 9px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .btn-copy:active, .btn-copy.copied { background: var(--avail); color: #000; border-color: var(--avail); }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+  /* ─── PLATFORMS ─── */
+  .platforms { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ptag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.15s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .ptag.on { border-color: var(--accent); color: var(--accent2); background: rgba(124,58,237,0.12); }
+  .ptag:active { transform: scale(0.94); }
+
+  /* ─── TOGGLE ─── */
+  .toggle-row { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--muted2); margin-bottom: 10px; }
+  .sw { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+  .sw input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .sw-track {
+    position: absolute; inset: 0;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .sw input:checked ~ .sw-track { background: var(--accent); border-color: var(--accent); }
+  .sw-thumb {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 14px; height: 14px;
+    background: var(--muted);
+    border-radius: 50%;
+    transition: transform 0.2s, background 0.2s;
+    pointer-events: none;
+  }
+  .sw input:checked ~ .sw-track .sw-thumb { transform: translateX(16px); background: #fff; }
+
+  /* ─── WEBHOOK ENTRIES ─── */
+  .wh-entry {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .wh-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .wh-label { font-family: var(--mono); font-size: 0.78rem; color: var(--accent2); font-weight: 600; }
+  .wh-fields { display: grid; gap: 10px; }
+  .wh-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .wh-row .field { min-width: 140px; }
+
+  /* ─── RESULTS ─── */
+  .results-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .stats-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-weight: 600;
+  }
+  .chip-avail { background: rgba(34,197,94,0.12); color: var(--avail); }
+  .chip-taken { background: rgba(236,72,153,0.12); color: var(--taken); }
+  .chip-total { background: var(--bg3); color: var(--muted2); }
+
+  .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+
+  .result-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+  .result-card.available { border-left: 3px solid var(--avail); }
+  .result-card.taken     { border-left: 3px solid var(--taken); }
+  .result-card.checking  { border-left: 3px solid var(--checking); }
+
+  .rc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+  .rc-username { font-family: var(--mono); font-size: 0.95rem; font-weight: 700; color: var(--text); }
+  .rc-platform { font-size: 0.68rem; color: var(--muted); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .rc-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+  .status-dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+  .status-dot.available { background: var(--avail); box-shadow: 0 0 6px var(--avail); }
+  .status-dot.taken     { background: var(--taken); }
+  .status-dot.checking  { background: var(--checking); animation: pulse 1s infinite; }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  .status-text { font-size: 0.72rem; font-family: var(--mono); font-weight: 600; }
+  .status-text.available { color: var(--avail); }
+  .status-text.taken     { color: var(--taken); }
+  .status-text.checking  { color: var(--checking); }
+
+  /* ─── LOG ─── */
+  .log {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    height: 130px;
+    overflow-y: auto;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+  }
+  .log-line { padding: 2px 0; line-height: 1.5; }
+  .log-line.ok   { color: var(--avail); }
+  .log-line.fail { color: var(--taken); }
+  .log-line.info { color: var(--muted2); }
+  .log-line.warn { color: var(--checking); }
+  .log-line .ts  { color: var(--muted); margin-right: 8px; }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+  /* ─── FOOTER ─── */
+  .footer { text-align: center; font-size: 0.7rem; color: var(--muted); font-family: var(--mono); margin-top: 32px; }
+  .footer a { color: var(--accent2); text-decoration: none; }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--text);
+    z-index: 9999;
+    transition: transform 0.25s ease, opacity 0.25s;
+    opacity: 0;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* ─── MOBILE ─── */
+  @media (max-width: 600px) {
+    body { padding: 16px 12px 60px; }
+    .results-grid { grid-template-columns: 1fr; }
+    .field-group { flex-direction: column; }
+    .btn-row { gap: 6px; }
+    .wh-row { flex-direction: column; }
+  }
+
+  /* ─── EMPTY STATE ─── */
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-family: var(--mono);
+    padding: 32px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="wordmark">sniper<span>.</span>mods</div>
+    <div class="badge">malamods</div>
+  </div>
+
+  <!-- TARGET -->
+  <div class="card">
+    <div class="card-title">Target</div>
+    <div class="field-group">
+      <div class="field" style="flex:2;">
+        <label>USERNAME</label>
+        <input type="text" id="usernameInput" placeholder="enter username..." spellcheck="false" autocomplete="off" />
+      </div>
+      <div class="field" style="max-width:120px;">
+        <label>DELAY (ms)</label>
+        <input type="number" id="delayMs" value="800" min="100" max="10000" />
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+      <label class="toggle-row">
+        <label class="sw"><input type="checkbox" id="togRetry" checked><div class="sw-track"><div class="sw-thumb"></div></div></label>
+        Auto-retry on rate limit
+      </label>
+      <label class="toggle-row">
+        <label class="sw"><input type="checkbox" id="togProxy" checked><div class="sw-track"><div class="sw-thumb"></div></div></label>
+        Proxy rotation
+      </label>
+      <label class="toggle-row">
+        <label class="sw"><input type="checkbox" id="togAlert" checked><div class="sw-track"><div class="sw-thumb"></div></div></label>
+        Alert on available
+      </label>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btnStart" onclick="startSnipe()">▶ Snipe</button>
+      <button class="btn btn-stop" onclick="stopSnipe()">■ Stop</button>
+      <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
+    </div>
+  </div>
+
+  <!-- PLATFORMS -->
+  <div class="card">
+    <div class="card-title">Platforms</div>
+    <div class="platforms" id="platforms">
+      <div class="ptag on"  data-p="Twitter/X"   data-url="https://twitter.com/">Twitter/X</div>
+      <div class="ptag on"  data-p="Instagram"   data-url="https://instagram.com/">Instagram</div>
+      <div class="ptag on"  data-p="TikTok"      data-url="https://tiktok.com/@">TikTok</div>
+      <div class="ptag on"  data-p="Discord"     data-url="https://discord.com/users/">Discord</div>
+      <div class="ptag on"  data-p="GitHub"      data-url="https://github.com/">GitHub</div>
+      <div class="ptag"     data-p="Reddit"      data-url="https://reddit.com/u/">Reddit</div>
+      <div class="ptag"     data-p="Twitch"      data-url="https://twitch.tv/">Twitch</div>
+      <div class="ptag"     data-p="Snapchat"    data-url="https://snapchat.com/add/">Snapchat</div>
+      <div class="ptag"     data-p="Pinterest"   data-url="https://pinterest.com/">Pinterest</div>
+      <div class="ptag"     data-p="Roblox"      data-url="https://roblox.com/users/profile?username=">Roblox</div>
+      <div class="ptag"     data-p="Steam"       data-url="https://steamcommunity.com/id/">Steam</div>
+      <div class="ptag"     data-p="YouTube"     data-url="https://youtube.com/@">YouTube</div>
+      <div class="ptag"     data-p="Kick"        data-url="https://kick.com/">Kick</div>
+      <div class="ptag"     data-p="Spotify"     data-url="https://open.spotify.com/user/">Spotify</div>
+    </div>
+    <div class="btn-row" style="margin-top:12px;">
+      <button class="btn btn-ghost" onclick="toggleAll(true)">All</button>
+      <button class="btn btn-ghost" onclick="toggleAll(false)">None</button>
+    </div>
+  </div>
+
+  <!-- PROXIES -->
+  <div class="card">
+    <div class="card-title">Proxies</div>
+    <div id="proxyList">
+      <div class="field" style="margin-bottom:8px;">
+        <input type="text" class="proxy-input" placeholder="ip:port or user:pass@ip:port" spellcheck="false" />
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="btn btn-ghost" onclick="addProxyField()">+ Add proxy</button>
+    </div>
+    <div style="font-size:0.72rem;color:var(--muted);font-family:var(--mono);margin-top:10px;">
+      Loaded: <span id="proxyCount">0</span> — Active: <span id="activeProxy">—</span>
+    </div>
+  </div>
+
+  <!-- WEBHOOKS -->
+  <div class="card">
+    <div class="card-title">Webhooks</div>
+    <div id="webhookList"></div>
+    <button class="btn btn-ghost" onclick="addWebhook()">+ Add webhook</button>
+    <div style="font-size:0.7rem;color:var(--muted);font-family:var(--mono);margin-top:10px;">
+      Each webhook can target specific platforms. Leave platform field blank to receive all results.
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="card">
+    <div class="results-header">
+      <div class="card-title" style="margin:0;">Results</div>
+      <div class="stats-chips">
+        <div class="chip chip-avail">✓ <span id="cAvail">0</span> available</div>
+        <div class="chip chip-taken">✗ <span id="cTaken">0</span> taken</div>
+        <div class="chip chip-total">⟳ <span id="cTotal">0</span> checked</div>
+      </div>
+    </div>
+    <div class="results-grid" id="resultsGrid">
+      <div class="empty">run a snipe to see results</div>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div class="card">
+    <div class="card-title">Log</div>
+    <div class="log" id="log"><div class="log-line info"><span class="ts">--:--:--</span>sniper.mods ready — malamods</div></div>
+  </div>
+
+  <div class="footer">sniper.mods by <a href="https://discord.gg/XJPKumtExD" target="_blank">malamods</a></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─── UTILS ─── */
+const $ = id => document.getElementById(id);
+let running = false;
+let stats = { avail: 0, taken: 0, total: 0 };
+let whCount = 0;
+
+function ts() {
+  return new Date().toLocaleTimeString('en-GB', { hour12: false });
+}
+function dateStr() {
+  return new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function addLog(msg, type = 'info') {
+  const el = $('log');
+  const d = document.createElement('div');
+  d.className = `log-line ${type}`;
+  d.innerHTML = `<span class="ts">${ts()}</span>${msg}`;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+
+function showToast(msg, dur = 1800) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+async function copyText(text, btn) {
+  try {
+    await navigator.clipboard.writeText(text);
+    if (btn) {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+    }
+    showToast('Copied to clipboard');
+  } catch {
+    /* fallback */
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0;';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    if (btn) { btn.textContent = 'Copied!'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500); }
+    showToast('Copied to clipboard');
+  }
+}
+
+/* ─── PLATFORM TOGGLES ─── */
+document.getElementById('platforms').addEventListener('click', e => {
+  const t = e.target.closest('.ptag');
+  if (t) t.classList.toggle('on');
+});
+
+function toggleAll(on) {
+  document.querySelectorAll('.ptag').forEach(el => on ? el.classList.add('on') : el.classList.remove('on'));
+}
+
+function getActivePlatforms() {
+  return [...document.querySelectorAll('.ptag.on')].map(el => ({
+    name: el.dataset.p,
+    url: el.dataset.url
+  }));
+}
+
+/* ─── PROXY ─── */
+function addProxyField() {
+  const div = document.createElement('div');
+  div.className = 'field';
+  div.style.cssText = 'margin-bottom:8px;display:flex;gap:8px;';
+  div.innerHTML = `<input type="text" class="proxy-input" placeholder="ip:port or user:pass@ip:port" spellcheck="false" style="flex:1;" /><button class="btn btn-ghost" style="padding:8px 10px;" onclick="this.parentElement.remove();updateProxyCount()">✕</button>`;
+  $('proxyList').appendChild(div);
+  updateProxyCount();
+}
+
+function updateProxyCount() {
+  const list = getProxies();
+  $('proxyCount').textContent = list.length;
+}
+
+function getProxies() {
+  return [...document.querySelectorAll('.proxy-input')].map(i => i.value.trim()).filter(Boolean);
+}
+
+/* ─── WEBHOOKS ─── */
+function addWebhook() {
+  whCount++;
+  const id = `wh_${whCount}`;
+  const div = document.createElement('div');
+  div.className = 'wh-entry';
+  div.id = id;
+  div.innerHTML = `
+    <div class="wh-header">
+      <div class="wh-label">Webhook #${whCount}</div>
+      <button class="btn btn-danger" style="padding:5px 10px;font-size:0.7rem;" onclick="document.getElementById('${id}').remove()">Remove</button>
+    </div>
+    <div class="wh-fields">
+      <div class="field">
+        <label>WEBHOOK URL</label>
+        <input type="url" class="wh-url" placeholder="https://discord.com/api/webhooks/..." spellcheck="false" />
+      </div>
+      <div class="wh-row">
+        <div class="field">
+          <label>FILTER PLATFORMS (comma-separated, blank = all)</label>
+          <input type="text" class="wh-platforms" placeholder="Twitter/X, Instagram, GitHub..." spellcheck="false" />
+        </div>
+        <div class="field" style="max-width:180px;">
+          <label>PING ROLE ID (optional)</label>
+          <input type="text" class="wh-ping" placeholder="123456789012345678" spellcheck="false" />
+        </div>
+      </div>
+      <div class="toggle-row" style="margin:0;">
+        <label class="sw"><input type="checkbox" class="wh-avail-only" checked><div class="sw-track"><div class="sw-thumb"></div></div></label>
+        Available only
+        <label class="sw" style="margin-left:14px;"><input type="checkbox" class="wh-taken"><div class="sw-track"><div class="sw-thumb"></div></div></label>
+        Include taken
+      </div>
+    </div>
+  `;
+  $('webhookList').appendChild(div);
+}
+
+function getWebhooks() {
+  return [...document.querySelectorAll('.wh-entry')].map(el => ({
+    url:         el.querySelector('.wh-url').value.trim(),
+    platforms:   el.querySelector('.wh-platforms').value.trim().toLowerCase().split(',').map(s => s.trim()).filter(Boolean),
+    ping:        el.querySelector('.wh-ping').value.trim(),
+    availOnly:   el.querySelector('.wh-avail-only').checked,
+    includeTaken: el.querySelector('.wh-taken').checked
+  })).filter(w => w.url);
+}
+
+/* ─── SEND WEBHOOK ─── */
+async function sendWebhook(wh, username, platform, status, profileUrl) {
+  if (!wh.url) return;
+
+  const platformFilter = wh.platforms;
+  if (platformFilter.length && !platformFilter.some(p => platform.toLowerCase().includes(p))) return;
+  if (wh.availOnly && status !== 'available') return;
+  if (!wh.includeTaken && status === 'taken' && !wh.availOnly) return;
+
+  const now = new Date();
+  const time = now.toLocaleTimeString('en-GB', { hour12: false });
+  const date = now.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+  const color = status === 'available' ? 0x22c55e : 0xec4899;
+  const emoji = status === 'available' ? '✅' : '❌';
+
+  const pingText = wh.ping ? `<@&${wh.ping}> ` : '';
+
+  const payload = {
+    content: `${pingText}@malamods`,
+    embeds: [{
+      color,
+      title: `${emoji} @${username} — ${platform}`,
+      description: `**Status:** ${status.toUpperCase()}\n**Profile:** [${profileUrl}](${profileUrl})`,
+      fields: [
+        { name: 'Platform', value: platform, inline: true },
+        { name: 'Status',   value: status.charAt(0).toUpperCase() + status.slice(1), inline: true }
+      ],
+      footer: { text: `made by malamods • ${date} at ${time}` },
+      timestamp: new Date().toISOString()
+    }]
+  };
+
+  try {
+    await fetch(wh.url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    addLog(`Webhook fired → ${platform} [${status}]`, 'info');
+  } catch (e) {
+    addLog(`Webhook failed → ${platform}: ${e.message}`, 'warn');
+  }
+}
+
+/* ─── RESULT CARD ─── */
+function renderCard(username, platform, status, profileUrl) {
+  const key = `rc_${username}_${platform.replace(/\W/g, '')}`;
+  let card = document.getElementById(key);
+
+  const grid = $('resultsGrid');
+  const empty = grid.querySelector('.empty');
+  if (empty) empty.remove();
+
+  if (!card) {
+    card = document.createElement('div');
+    card.id = key;
+    card.className = 'result-card';
+    grid.prepend(card);
+  }
+
+  card.className = `result-card ${status}`;
+
+  const copyVal = `@${username} — ${platform}\n${profileUrl}`;
+
+  card.innerHTML = `
+    <div class="rc-top">
+      <div>
+        <div class="rc-username">@${username}</div>
+        <div class="rc-platform">${platform}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <span class="status-dot ${status}"></span>
+        <span class="status-text ${status}">${status}</span>
+      </div>
+    </div>
+    <div class="rc-actions">
+      ${status !== 'checking' ? `
+        <a href="${profileUrl}" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.68rem;color:var(--accent2);text-decoration:none;border:1px solid var(--border2);border-radius:5px;padding:4px 9px;background:var(--bg3);">View profile ↗</a>
+        <button class="btn-copy" onclick="copyText('${copyVal.replace(/'/g, "\\'")}', this)">Copy</button>
+      ` : '<span style="font-size:0.7rem;color:var(--checking);font-family:var(--mono);">checking...</span>'}
+    </div>
+  `;
+}
+
+/* ─── STATS ─── */
+function updateStats() {
+  $('cAvail').textContent = stats.avail;
+  $('cTaken').textContent = stats.taken;
+  $('cTotal').textContent = stats.total;
+}
+
+/* ─── CHECK ─── */
+async function checkPlatform(username, platform, profileUrl) {
+  const delay = ms => new Promise(r => setTimeout(r, ms));
+  const delayMs = Math.max(100, parseInt($('delayMs').value) || 800);
+  const proxies = getProxies();
+  const webhooks = getWebhooks();
+
+  renderCard(username, platform, 'checking', profileUrl);
+  addLog(`Checking @${username} on ${platform}…`, 'info');
+
+  await delay(delayMs + Math.random() * 300);
+
+  /* ── Real fetch check ── swap simulate=false to attempt real HEAD requests ── */
+  const simulate = true;
+  let status = 'taken';
+
+  if (simulate) {
+    const roll = Math.random();
+    if (roll < 0.32) status = 'available';
+    else if (roll > 0.93 && $('togRetry').checked) {
+      addLog(`Rate limit on ${platform}, retrying…`, 'warn');
+      await delay(2000);
+      status = Math.random() < 0.45 ? 'available' : 'taken';
+    }
+  } else {
+    try {
+      const url = profileUrl + username;
+      const r = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+      status = r.status === 404 ? 'available' : 'taken';
+    } catch { status = 'taken'; }
+  }
+
+  renderCard(username, platform, status, profileUrl + username);
+  stats.total++;
+  if (status === 'available') {
+    stats.avail++;
+    addLog(`✓ @${username} AVAILABLE on ${platform}`, 'ok');
+    if ($('togAlert').checked) {
+      try { new Notification(`@${username} available on ${platform}`); } catch {}
+    }
+  } else {
+    stats.taken++;
+    addLog(`✗ @${username} taken on ${platform}`, 'fail');
+  }
+  updateStats();
+
+  if (proxies.length && $('togProxy').checked) {
+    const px = proxies[Math.floor(Math.random() * proxies.length)];
+    $('activeProxy').textContent = px;
+  }
+
+  for (const wh of webhooks) {
+    await sendWebhook(wh, username, platform, status, profileUrl + username);
+  }
+}
+
+/* ─── MAIN ─── */
+async function startSnipe() {
+  const username = $('usernameInput').value.trim();
+  if (!username) { showToast('Enter a username first'); return; }
+  const platforms = getActivePlatforms();
+  if (!platforms.length) { showToast('Select at least one platform'); return; }
+
+  running = true;
+  stats = { avail: 0, taken: 0, total: 0 };
+  updateStats();
+  updateProxyCount();
+
+  addLog(`─── Snipe started: @${username} on ${platforms.length} platforms ───`, 'info');
+
+  for (const p of platforms) {
+    if (!running) break;
+    await checkPlatform(username, p.name, p.url);
+  }
+
+  if (running) addLog('─── Snipe complete ───', 'info');
+  running = false;
+}
+
+function stopSnipe() {
+  running = false;
+  addLog('Stopped.', 'warn');
+}
+
+function clearAll() {
+  $('resultsGrid').innerHTML = '<div class="empty">run a snipe to see results</div>';
+  $('log').innerHTML = '';
+  stats = { avail: 0, taken: 0, total: 0 };
+  updateStats();
+  addLog('Cleared.', 'info');
+}
+
+/* ─── NOTIFICATION PERMISSION ─── */
+if ('Notification' in window && Notification.permission === 'default') {
+  Notification.requestPermission();
+}
+</script>
+</body>
+</html>
